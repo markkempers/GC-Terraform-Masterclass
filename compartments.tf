@@ -1,6 +1,6 @@
-resource "oci_identity_compartment" "wordpress" {
+resource "oci_identity_compartment" "tfdemo" {
   compartment_id = var.tenancy_ocid
-  description = "Compartment to install the wordpress demo"
-  name = "wordpress-demo"
+  description = "Compartment for this Terraform demo" 
+  name = "tf-demo"
   enable_delete = true
 }
