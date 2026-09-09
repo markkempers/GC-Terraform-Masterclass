@@ -1,0 +1,12 @@
+- name: TF-DEMO | Setup basics on this machine
+  hosts: all
+  tasks:
+    - name: Set Timezone to Amsterdam
+      community.general.timezone:
+        name: Europe/Amsterdam
+
+    - name: Firewall | Stop FirewallD
+      ansible.builtin.service:
+        name: firewalld
+        state: stopped
+        enabled: false
