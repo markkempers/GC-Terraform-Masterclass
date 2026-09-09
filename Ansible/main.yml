@@ -10,3 +10,10 @@
         name: firewalld
         state: stopped
         enabled: false
+
+    - name: MOTD | Set MOTD
+      ansible.builtin.copy:
+        dest: /etc/motd
+        content: |
+          Welcome to the TF-DEMO environment!
+          Please follow the guidelines and best practices while using this system.
