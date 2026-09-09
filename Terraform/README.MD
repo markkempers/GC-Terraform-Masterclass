@@ -19,60 +19,14 @@ Running this Terraform configuration will create the following resources in your
 
 ## Prerequisites
 
-This lab assumes you work from an **Oracle Linux 9** machine (a local VM, a laptop, or an OCI compute instance).
+Before using this Terraform configuration, make sure your machine is set up as described in the [repository root README](../README.MD): an Oracle Linux 9 VM with Terraform and the OCI CLI installed, and `oci setup config` completed (this is what provides the `DEFAULT` profile used by [provider.tf](provider.tf) via `config_file_profile = "DEFAULT"`).
 
-### 1. OCI account and access
+You will also need:
 
 - An Oracle Cloud Infrastructure account/tenancy with permissions to create compartments, networking and compute resources.
 - Your tenancy OCID.
-- An OCI user with an API signing key configured (see below).
 
-### 2. Install required packages
-
-```bash
-sudo dnf install -y git unzip
-```
-
-### 3. Install Terraform
-
-```bash
-sudo dnf install -y dnf-plugins-core
-sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-sudo dnf install -y terraform
-terraform -version
-```
-
-### 4. Install and configure the OCI CLI
-
-The OCI CLI is used to generate/manage the API key used by the Terraform OCI provider.
-
-> If you launched your Oracle Linux 9 machine from the official OCI platform image, the OCI CLI is **already preinstalled** — skip straight to `oci setup config` below. It is only missing on a generic/on-prem/VirtualBox Oracle Linux 9 install. In that case, install it first:
->
-> ```bash
-> sudo dnf install -y oci-cli
-> ```
-
-```bash
-oci setup config
-```
-
-`oci setup config` will:
-
-- Ask for your tenancy OCID, user OCID and region.
-- Generate an API signing key pair (or let you reuse an existing one).
-- Upload the public key to your OCI user account (**Identity & Security > Users > your user > API Keys**).
-- Write a config file to `~/.oci/config`, using the `DEFAULT` profile.
-
-This `DEFAULT` profile is what [provider.tf](provider.tf) uses (`config_file_profile = "DEFAULT"`).
-
-### 5. Clone this repository
-
-```bash
-git clone <repository-url>
-cd oci-landingzone-basic
-```
-
-### 6. Configure variables
+### Configure variables
 
 Adjust [variables.tf](variables.tf) / [terraform.tfvars](terraform.tfvars) as needed:
 
