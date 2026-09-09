@@ -1,39 +1,25 @@
 # OCI Landing Zone - Basic
 
-This repository contains a basic Terraform setup for Oracle Cloud Infrastructure (OCI). It is used as a starting point for an IT students masterclass on Infrastructure as Code with Terraform.
+This repository is the base material for an IT students masterclass on Infrastructure as Code, combining **Terraform** and **Ansible** to build and configure resources on Oracle Cloud Infrastructure (OCI).
 
-## Resources created
+## Repository structure
 
-Running this Terraform configuration will create the following resources in your OCI tenancy:
-
-| Resource | Terraform type | Description |
-|---|---|---|
-| Compartment | `oci_identity_compartment` | A dedicated compartment (`tf-demo`) to isolate all demo resources from the rest of the tenancy |
-| Virtual Cloud Network (VCN) | `oci_core_vcn` | The network (`10.10.0.0/16`) that all other network resources live in |
-| Subnet | `oci_core_subnet` | A public subnet (`10.10.1.0/24`) inside the VCN |
-| Internet Gateway | `oci_core_internet_gateway` | Allows resources in the VCN to reach (and be reached from) the internet |
-| Route Table | `oci_core_route_table` | Routes all outbound traffic (`0.0.0.0/0`) through the internet gateway |
-| Security List | `oci_core_security_list` | Firewall rules for the subnet: allows inbound SSH (port 22) only from `var.students_cidr`, and allows all outbound traffic |
-
-> **Note:** No compute instance (virtual machine) is created yet. Creating a VM in this network is the topic of the **next masterclass session**.
+| Folder | Description |
+|---|---|
+| [Terraform/](Terraform/) | Terraform configuration that provisions the OCI landing zone (compartment, VCN, subnet, gateway, route table, security list, compute instance). See [Terraform/README.MD](Terraform/README.MD) for details. |
+| [Ansible/](Ansible/) | Ansible playbooks used to configure the compute instance(s) created by Terraform. |
 
 ## Prerequisites
 
-This lab assumes you work from an **Oracle Linux 9** machine (a local VM, a laptop, or an OCI compute instance).
+You work from a local **Oracle Linux 9** virtual machine (VirtualBox, VMware, UTM, ...) running on your own laptop. The steps below prepare that VM with everything needed for the masterclass: Terraform, Ansible and the OCI CLI.
 
-### 1. OCI account and access
-
-- An Oracle Cloud Infrastructure account/tenancy with permissions to create compartments, networking and compute resources.
-- Your tenancy OCID.
-- An OCI user with an API signing key configured (see below).
-
-### 2. Install required packages
+### 1. Install required packages
 
 ```bash
 sudo dnf install -y git unzip
 ```
 
-### 3. Install Terraform
+### 2. Install Terraform
 
 ```bash
 sudo dnf install -y dnf-plugins-core
@@ -42,9 +28,25 @@ sudo dnf install -y terraform
 terraform -version
 ```
 
+### 3. Install Ansible
+
+Oracle Linux 9 ships `ansible-core` through the AppStream repository:
+
+```bash
+sudo dnf install -y ansible-core
+ansible --version
+```
+
+> If `ansible-core` cannot be found, enable the EPEL repository first and try again:
+>
+> ```bash
+> sudo dnf install -y oracle-epel-release-el9
+> sudo dnf install -y ansible-core
+> ```
+
 ### 4. Install and configure the OCI CLI
 
-The OCI CLI is used to generate/manage the API key used by the Terraform OCI provider.
+The OCI CLI is used to generate/manage the API signing key used by the Terraform OCI provider, and is handy for verifying resources from the command line.
 
 > If you launched your Oracle Linux 9 machine from the official OCI platform image, the OCI CLI is **already preinstalled** — skip straight to `oci setup config` below. It is only missing on a generic/on-prem/VirtualBox Oracle Linux 9 install. In that case, install it first:
 >
@@ -63,7 +65,13 @@ oci setup config
 - Upload the public key to your OCI user account (**Identity & Security > Users > your user > API Keys**).
 - Write a config file to `~/.oci/config`, using the `DEFAULT` profile.
 
-This `DEFAULT` profile is what [provider.tf](provider.tf) uses (`config_file_profile = "DEFAULT"`).
+This `DEFAULT` profile is what the Terraform OCI provider uses (`config_file_profile = "DEFAULT"`) — see [Terraform/provider.tf](Terraform/provider.tf).
+
+Verify the CLI can reach your tenancy:
+
+```bash
+oci iam region list
+```
 
 ### 5. Clone this repository
 
@@ -72,32 +80,7 @@ git clone <repository-url>
 cd oci-landingzone-basic
 ```
 
-### 6. Configure variables
-
-Adjust [variables.tf](variables.tf) / [terraform.tfvars](terraform.tfvars) as needed:
-
-| Variable | Description | Default |
-|---|---|---|
-| `region` | OCI region to deploy into | `eu-amsterdam-1` |
-| `tenancy_ocid` | Your OCI tenancy OCID | `ocid.xxxx` (must be set) |
-| `students_cidr` | CIDR range allowed to SSH into the subnet | `192.168.1.0/24` |
-
-At minimum, set `tenancy_ocid` to your own tenancy OCID and `students_cidr` to the CIDR your traffic originates from.
-
-## Usage
-
-```bash
-terraform init
-terraform plan
-terraform apply
-```
-
-To tear everything down again:
-
-```bash
-terraform destroy
-```
-
 ## Next steps
 
-In the next masterclass, we will extend this landing zone by adding a compute instance (virtual machine) into the subnet created here, using [compute.tf](compute.tf).
+- Provision the OCI landing zone with Terraform: see [Terraform/README.MD](Terraform/README.MD).
+- Configure the resulting compute instance(s) with Ansible: see the [Ansible/](Ansible/) folder.
