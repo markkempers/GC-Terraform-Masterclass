@@ -48,13 +48,10 @@ ansible --version
 
 The OCI CLI is used to generate/manage the API signing key used by the Terraform OCI provider, and is handy for verifying resources from the command line.
 
-> If you launched your Oracle Linux 9 machine from the official OCI platform image, the OCI CLI is **already preinstalled** — skip straight to `oci setup config` below. It is only missing on a generic/on-prem/VirtualBox Oracle Linux 9 install. In that case, install it first:
->
-> ```bash
-> sudo dnf install -y oci-cli
-> ```
 
 ```bash
+sudo dnf install -y oraclelinux-developer-release-el9
+sudo dnf install -y python39-oci-cli
 oci setup config
 ```
 
