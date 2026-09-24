@@ -40,11 +40,15 @@ At minimum, set `tenancy_ocid` to your own tenancy OCID and `students_cidr` to t
 
 ## Usage
 
+The Terraform state file (`terraform.tfstate`) is kept **outside this repository** so it never gets committed, overwritten by `git pull`, or wiped by `git clean`. This is configured via a [local backend](provider.tf) with a relative `path` that climbs out of the repo, so it ends up next to (not inside) the cloned repository.
+
 ```bash
 terraform init
 terraform plan
 terraform apply
 ```
+
+> The state file lands at `../../.terraform-state/oci-landingzone-basic/terraform.tfstate` relative to this directory, i.e. a sibling of wherever you cloned the repo. Terraform creates that directory automatically. If you cloned somewhere unusual and want state elsewhere instead, run `terraform init -reconfigure -backend-config="path=<your-path>"`.
 
 To tear everything down again:
 
